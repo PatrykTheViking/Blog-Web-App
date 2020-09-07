@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 from .models import Topic
-from .forms import TopicForm
+from .forms import TopicForm, EntryForm
 
 
 def index(request):
@@ -26,7 +26,7 @@ def topic(request, topic_id):
 
 
 def new_topic(request):
-    "Add new topic"
+    """Add new topic"""
     if request.method != 'POST':
         # no data, create empty form
         form = TopicForm()
@@ -39,4 +39,25 @@ def new_topic(request):
 
     # display empty form
     context = {'form': form}
-    return  render(request, 'learning_logs/new_topic.html', context)
+    return render(request, 'learning_logs/new_topic.html', context)
+
+
+def new_entry(request, topic_id):
+    """Add new entry for a certain topic"""
+    topic = Topic.objects.get(id=topic_id)
+
+    if request.method != 'POST':
+        # no data, create empty form
+        form = EntryForm()
+    else:
+        # POST data added, need conversion
+        form = EntryForm(data=request.POST)
+        if form.is_valid():
+            new_entry = form.save(commit=False)
+            new_entry.topic = topic
+            new_entry.save()
+            return redirect('learning_logs:topic', topic_id=topic_id)
+
+    # display empty form
+    context = {'topic': topic, 'form': form}
+    return render(request, 'learning_logs/new_entry.html', context)
