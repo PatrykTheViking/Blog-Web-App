@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from . import views
+from learning_logs import views
 
 app_name = 'learning_logs'
 urlpatterns = [
