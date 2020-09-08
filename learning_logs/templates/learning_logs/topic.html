@@ -20,7 +20,7 @@
 <ul>
     {% for entry in entries %}
     <li>
-        <p>{{ entry.date_added|date:'d M Y H:i' }}</p>
+        <p>{{ entry.date_added|date:'d M Y H:i' }} - {{ topic.owner }}</p>
         <p>{{ entry.text|linebreaks }}</p>
 
           <p>

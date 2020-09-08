@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
@@ -18,7 +19,7 @@ def topics(request):
     return render(request, 'learning_logs/topics.html', context)
 
 
-@login_required()
+@login_required
 def topic(request, topic_id):
     """Display single topic and all attached posts"""
     topic = Topic.objects.get(id=topic_id)
@@ -28,7 +29,7 @@ def topic(request, topic_id):
     return render(request, 'learning_logs/topic.html', context)
 
 
-@login_required()
+@login_required
 def new_topic(request):
     """Add new topic"""
     if request.method != 'POST':
@@ -46,7 +47,7 @@ def new_topic(request):
     return render(request, 'learning_logs/new_topic.html', context)
 
 
-@login_required()
+@login_required
 def new_entry(request, topic_id):
     """Add new entry for a certain topic"""
     topic = Topic.objects.get(id=topic_id)
@@ -68,11 +69,13 @@ def new_entry(request, topic_id):
     return render(request, 'learning_logs/new_entry.html', context)
 
 
-@login_required()
+@login_required
 def edit_entry(request, entry_id):
     """Edit existing entry"""
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
+    if topic.owner != request.user:
+        raise Http404
 
     if request.method != 'POST':
         form = EntryForm(instance=entry)
@@ -84,7 +87,3 @@ def edit_entry(request, entry_id):
 
     context = {'entry': entry, 'topic': topic, 'form': form}
     return render(request, 'learning_logs/edit_entry.html', context)
-
-
-
-
