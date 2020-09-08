@@ -23,4 +23,4 @@ class Entry(models.Model):
         if self.text < 50:
             return self.text
         else:
-            return self.text[:50]
+            return self.text
